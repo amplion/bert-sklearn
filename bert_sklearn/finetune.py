@@ -141,7 +141,8 @@ def finetune(model, X1, X2, y, config):
                 global_step += 1
 
             losses.append(loss.item() * grad_accum_steps)
-            batch_iter.set_postfix(loss=np.mean(losses))
+            if config.progress_bar:
+                batch_iter.set_postfix(loss=np.mean(losses))
 
         if val_dl is not None:
             res = eval_model(model, val_dl, config)
