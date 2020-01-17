@@ -24,6 +24,8 @@ class FinetuneConfig:
         label to id dict for classifiers
     ignore_label: string
         label to ignore during eval, useful for NER evals
+    progress_bar : bool
+        optionally display progress bar during predict and fit methods.
 
     model params
     ============
@@ -69,7 +71,7 @@ class FinetuneConfig:
                  warmup_proportion=0.1, train_batch_size=32, eval_batch_size=8,
                  gradient_accumulation_steps=1, local_rank=-1, fp16=False,
                  loss_scale=0, use_cuda=True, logger=None, ignore_label=None,
-                 device=None):
+                 device=None, progress_bar=True):
 
         self.tokenizer = tokenizer
         self.max_seq_length = max_seq_length
@@ -92,6 +94,7 @@ class FinetuneConfig:
         self.ignore_label = ignore_label
         self.device = device
         self.ignore_label_id = None
+        self.progress_bar = progress_bar
 
         # get the id for the label to ignore i.e 'O' for NER during eval
         if self.label2id is not None and self.ignore_label is not None:
@@ -122,4 +125,6 @@ def model2config(model):
         use_cuda=model.use_cuda,
         val_frac=model.validation_fraction,
         logger=model.logger,
-        ignore_label=model.ignore_label)
+        ignore_label=model.ignore_label,
+        progress_bar=model.progress_bar
+    )

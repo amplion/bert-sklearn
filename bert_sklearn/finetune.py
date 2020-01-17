@@ -114,7 +114,10 @@ def finetune(model, X1, X2, y, config):
 
         model.train()
         losses = []
-        batch_iter = pbar(train_dl, desc="Training  ", leave=True)
+        if config.progress_bar:
+            batch_iter = pbar(train_dl, desc="Training  ", leave=True)
+        else:
+            batch_iter = train_dl
 
         for step, batch in enumerate(batch_iter):
             batch = tuple(t.to(device) for t in batch)
@@ -192,7 +195,10 @@ def eval_model(model, dataloader, config, desc="Validating"):
     res = {}
 
     sys.stdout.flush()
-    batch_iter = pbar(dataloader, desc=desc, leave=True)
+    if model.progress_bar:
+        batch_iter = pbar(dataloader, desc=desc, leave=True)
+    else:
+        batch_iter = dataloader
 
     for eval_steps, batch in enumerate(batch_iter):
         batch = tuple(t.to(device) for t in batch)
