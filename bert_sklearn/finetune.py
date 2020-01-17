@@ -196,7 +196,7 @@ def eval_model(model, dataloader, config, desc="Validating"):
     res = {}
 
     sys.stdout.flush()
-    if model.progress_bar:
+    if config.progress_bar:
         batch_iter = pbar(dataloader, desc=desc, leave=True)
     else:
         batch_iter = dataloader
