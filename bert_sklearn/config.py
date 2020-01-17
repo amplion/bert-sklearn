@@ -24,6 +24,8 @@ class FinetuneConfig:
         label to id dict for classifiers
     ignore_label: string
         label to ignore during eval, useful for NER evals
+    progress_bar : bool
+        optionally display progress bar during predict and fit methods.
 
     model params
     ============
