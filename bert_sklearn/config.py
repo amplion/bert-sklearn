@@ -92,6 +92,7 @@ class FinetuneConfig:
         self.ignore_label = ignore_label
         self.device = device
         self.ignore_label_id = None
+        self.progress_bar = progress_bar
 
         # get the id for the label to ignore i.e 'O' for NER during eval
         if self.label2id is not None and self.ignore_label is not None:

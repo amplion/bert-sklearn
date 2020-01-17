@@ -195,7 +195,10 @@ def eval_model(model, dataloader, config, desc="Validating"):
     res = {}
 
     sys.stdout.flush()
-    batch_iter = pbar(dataloader, desc=desc, leave=True)
+    if model.progress_bar:
+        batch_iter = pbar(dataloader, desc=desc, leave=True)
+    else:
+        batch_iter = dataloader
 
     for eval_steps, batch in enumerate(batch_iter):
         batch = tuple(t.to(device) for t in batch)
