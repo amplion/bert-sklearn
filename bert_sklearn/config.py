@@ -69,7 +69,7 @@ class FinetuneConfig:
                  warmup_proportion=0.1, train_batch_size=32, eval_batch_size=8,
                  gradient_accumulation_steps=1, local_rank=-1, fp16=False,
                  loss_scale=0, use_cuda=True, logger=None, ignore_label=None,
-                 device=None):
+                 device=None, progress_bar=True):
 
         self.tokenizer = tokenizer
         self.max_seq_length = max_seq_length
@@ -122,4 +122,6 @@ def model2config(model):
         use_cuda=model.use_cuda,
         val_frac=model.validation_fraction,
         logger=model.logger,
-        ignore_label=model.ignore_label)
+        ignore_label=model.ignore_label,
+        progress_bar=model.progress_bar
+    )
