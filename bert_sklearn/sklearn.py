@@ -144,6 +144,8 @@ class BaseBertEstimator(BaseEstimator):
         Labels to be ignored when calculating f1 for token classifiers
     progress_bar : bool
         optionally display progress bar during predict and fit methods.
+    gpu_to_cpu : bool
+        the model being loaded was trained on GPU, but you are loading in env that has no GPU
     """
     def __init__(self, bert_model='bert-base-uncased',
                  bert_config_json=None, bert_vocab=None,
@@ -154,7 +156,7 @@ class BaseBertEstimator(BaseEstimator):
                  gradient_accumulation_steps=1, fp16=False, loss_scale=0,
                  local_rank=-1, use_cuda=True, random_state=42,
                  validation_fraction=0.1, logfile='bert_sklearn.log',
-                 ignore_label=None, progress_bar=False):
+                 ignore_label=None, progress_bar=False, gpu_to_cpu=False):
 
         self.id2label, self.label2id = {}, {}
         self.input_text_pairs = None
@@ -189,11 +191,12 @@ class BaseBertEstimator(BaseEstimator):
         self.logger = get_logger(logfile)
         self.logger.info("Loading model:\n" + str(self))
 
+
         # if given a restore_file, then finish loading a previously finetuned
         # model. Normally a user wouldn't do this directly. This is called from
         # load_model() to finish constructing the object
         if restore_file is not None:
-            self.restore_finetuned_model(restore_file)
+            self.restore_finetuned_model(restore_file, gpu_to_cpu)
 
         self._validate_hyperparameters()
 
@@ -447,7 +450,7 @@ class BaseBertEstimator(BaseEstimator):
         }
         torch.save(state, filename)
 
-    def restore_finetuned_model(self, restore_file):
+    def restore_finetuned_model(self, restore_file, gpu_to_cpu=False):
         """
         Restore a previously finetuned model from a restore_file
 
@@ -455,7 +458,10 @@ class BaseBertEstimator(BaseEstimator):
         is a finetuned BertPlusMLP
         """
         self.logger.info("Loading model from %s..."%(restore_file))
-        state = torch.load(restore_file)
+        if gpu_to_cpu:
+            state = torch.load(restore_file)
+        else:
+            state = torch.load(restore_file, map_location='cpu')
 
         params = state['params']
         self.set_params(**params)
@@ -821,7 +827,7 @@ class BertTokenClassifier(BaseBertEstimator, ClassifierMixin):
         return tags
 
 
-def load_model(filename, logfile='bert_sklearn.log', progress_bar=True):
+def load_model(filename, logfile='bert_sklearn.log', progress_bar=True, gpu_to_cpu=False):
     """
     Load BertClassifier, BertRegressor, or BertTokenClassifier from a disk file.
 
@@ -847,5 +853,5 @@ def load_model(filename, logfile='bert_sklearn.log', progress_bar=True):
 
     # call the constructor to load the model
     model_ctor = classes[class_name]
-    model = model_ctor(restore_file=filename, logfile=logfile, progress_bar=progress_bar)
+    model = model_ctor(restore_file=filename, logfile=logfile, progress_bar=progress_bar, gpu_to_cpu=False)
     return model
