@@ -843,7 +843,10 @@ def load_model(filename, logfile='bert_sklearn.log', progress_bar=True, gpu_to_c
         ----------
         model : BertClassifier, BertRegressor, or BertTokenClassifier model
     """
-    state = torch.load(filename)
+    if gpu_to_cpu:
+        state = torch.load(filename, map_location='cpu')
+    else:
+        state = torch.load(filename)
     class_name = state['class_name']
 
     classes = {
@@ -853,5 +856,5 @@ def load_model(filename, logfile='bert_sklearn.log', progress_bar=True, gpu_to_c
 
     # call the constructor to load the model
     model_ctor = classes[class_name]
-    model = model_ctor(restore_file=filename, logfile=logfile, progress_bar=progress_bar, gpu_to_cpu=False)
+    model = model_ctor(restore_file=filename, logfile=logfile, progress_bar=progress_bar, gpu_to_cpu=gpu_to_cpu)
     return model
