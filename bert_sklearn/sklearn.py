@@ -459,9 +459,9 @@ class BaseBertEstimator(BaseEstimator):
         """
         self.logger.info("Loading model from %s..."%(restore_file))
         if gpu_to_cpu:
-            state = torch.load(restore_file)
-        else:
             state = torch.load(restore_file, map_location=torch.device('cpu'))
+        else:
+            state = torch.load(restore_file)
 
         params = state['params']
         self.set_params(**params)
