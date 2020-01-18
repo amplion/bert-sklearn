@@ -461,7 +461,7 @@ class BaseBertEstimator(BaseEstimator):
         if gpu_to_cpu:
             state = torch.load(restore_file)
         else:
-            state = torch.load(restore_file, map_location='cpu')
+            state = torch.load(restore_file, map_location=torch.device('cpu'))
 
         params = state['params']
         self.set_params(**params)
@@ -844,7 +844,7 @@ def load_model(filename, logfile='bert_sklearn.log', progress_bar=True, gpu_to_c
         model : BertClassifier, BertRegressor, or BertTokenClassifier model
     """
     if gpu_to_cpu:
-        state = torch.load(filename, map_location='cpu')
+        state = torch.load(filename, map_location=torch.device('cpu'))
     else:
         state = torch.load(filename)
     class_name = state['class_name']
